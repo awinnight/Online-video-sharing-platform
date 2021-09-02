@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wk.video.mapper.HistoryMapper">
+
+    <!-- 查询历史视频-->
+    <select id="queryHistory" resultType="History">
+        select a.id, a.userid, a.videoid, a.createtime, b.uploader, b.title, b.descr, b.typeid, b.views, b.coverurl, b.videourl, b.createtime creatTime,c.nickname nickName
+        from history a
+        LEFT JOIN video b ON a.videoid = b.id
+        LEFT JOIN user c ON b.uploader = c.id
+        WHERE a.userid = #{id}
+        ORDER BY a.createtime DESC
+    </select>
+
+</mapper>

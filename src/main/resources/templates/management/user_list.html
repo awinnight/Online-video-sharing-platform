@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+    <script type="text/javascript" th:src="@{https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="ban">封禁</a>
+    </script>
+
+    <script type="text/javascript" th:inline="javascript">
+        function status(data) {
+            switch (data) {
+                case '0' :
+                    return "封禁"
+                    break;
+                case '1' :
+                    return "正常"
+                    break;
+            }
+        }
+
+        layui.use("table", function () {
+            $ = layui.jquery;
+            var table = layui.table;
+
+            table.render({
+                elem: "#demo"
+                , height: 500
+                , id: 'testReload'
+                , url: 'http://localhost:8080/video/user/get_Users'
+                , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                    //,curr: 5 //设定初始在第 5 页
+                    , groups: 1 //只显示 1 个连续页码
+                    , first: false //不显示首页
+                    , last: false //不显示尾页
+
+                }
+                , request: {
+                    pageName: 'current' //页码的参数名称，默认：page
+                    , limitName: 'size' //每页数据量的参数名，默认：limit
+                    // ,createuser:[[${session.login_user.id}]]
+                }
+                , cols: [
+                    //用户名、真实姓名、单位、用户角色、联系电话、状态
+                    [
+                        {field: 'id', title: 'ID', sort: true, fixed: 'left'}
+                        , {
+                        field: 'userName', title: '用户名'}
+                        , {field: 'nickName', title: '昵称'}
+                        , {field: 'email', title: '邮箱'}
+                        , {
+                        field: 'rolename', title: '角色'
+                    }
+                        , {
+                        field: 'status', title: '用户状态', templet: function (d) {
+                            return status(d.status);
+                        }
+                    }
+                        , {fixed: 'right', title: '操作', toolbar: '#barDemo', align: 'center',width:250}
+                    ]
+                ]
+            });
+            //监听工具条
+            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                // var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+                switch (layEvent) {
+                    case 'detail':
+                        // layer.msg("id:"+data.id+";uname="+data.uname+";upass="+data.upass);
+                        x_admin_show("查看用户", './to_view_user/' + data.id, 600, 400);
+                        break;
+                    case 'edit':
+                        // layer.msg("edit");
+                        // x_admin_show("编辑用户",'http://localhost:8080/petition/user_edit',600,400);
+                        x_admin_show("编辑用户", './to_edit_user/' + data.id, 600, 400);
+                        break;
+                    case 'ban':
+                        $.ajax({
+                            url: 'http://localhost:8080/petition/update_userStatus',
+                            data: data,
+                            dataType: "json",
+                            success: function (data) {
+                                table.reload('testReload', {
+                                    url: 'http://localhost:8080/petition/get_Users'
+                                    , height: 500
+                                });
+                            }
+                        });
+                        break;
+                }
+            });
+
+            //注册单击事件
+            $("#btnSearch").on("click", function () {
+
+                var userName = $("#userName").val();
+                var email = $("#email").val();
+                var nickName = $("#nickName").val();
+                //执行重载
+                table.reload('testReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        userName: userName,
+                        email: email,
+                        nickName: nickName
+                    }
+                }, 'data');
+            })
+        });
+    </script>
+
+</head>
+
+<body class="layui-anim layui-anim-up">
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">用户管理</a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe666;</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so">
+            <input type="text" id="email" name="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            <input type="text" id="userName" name="userName" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+            <input type="text" id="nickName" name="nickName" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+            <button id="btnSearch" class="layui-btn" type="button"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <table id="demo" lay-filter="test"></table>
+
+
+</div>
+</body>
+
+</html>

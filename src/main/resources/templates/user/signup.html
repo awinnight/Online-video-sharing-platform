@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <link rel="icon" th:href="@{static/images/logo.png}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/animate.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/flatpickr.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello-codes.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/thumbs-embedded.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/responsive.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/color.css}">
+    <script th:src="@{static/js/jquery.min.js}"></script>
+    <script th:src="@{static/js/popper.js}"></script>
+    <script th:src="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/js/bootstrap.min.js}"></script>
+    <script th:src="@{static/js/flatpickr.js}"></script>
+    <script th:src="@{static/js/script.js}"></script>
+    <script th:src="@{static/js/layer/layer.js}"></script>
+    <script>
+        function existsUsername(username){
+            var flag = true;
+            $.ajax({
+                url: "user/existsUsername",
+                type: "POST",
+                data: {
+                    username: username
+                },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.code != 0) {
+                        $("span[name=unameMsg]").html("用户名已被使用！");
+                        flag = false;
+                    }
+                }
+            })
+            return flag;
+        }
+
+        function existsEmail(email){
+            var flag = true;
+            $.ajax({
+                url: "user/existsEmail",
+                type: "POST",
+                data: {
+                    email: email
+                },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.code != 0) {
+                        $("span[name=emailMsg]").html("邮箱已被注册！");
+                        flag = false;
+                    }
+                }
+            })
+            return flag;
+        }
+
+        $(function () {
+            $("#signup").click(function () {
+                var username = $("[name=username]").val();
+                var email = $("#email").val();
+                var nickname = $("#nickname").val();
+                var password = $("[name=password]").val();
+                var repassword = $("#repassword").val();
+                var code = $("#code").val();
+                var flag = false;
+                //输入验证
+                if ((username == "") || (password == "") || (email == "") || (nickname == "") || (repassword == "") || (code == "")) {
+                    flag = true;
+                }
+                if(!existsUsername(username)){
+                    flag = true;
+                }
+                if(!existsEmail(email)){
+                    flag = true;
+                }
+                if ((username.match(/^\w{5,12}$/) == null)) {
+                    $("span[name=unameMsg]").html("用户名不合法！");
+                    flag = true;
+                }
+                if (nickname.match(/^.{2,12}$/) == null) {
+                    $("span[name=nickMsg]").text("昵称不合法！");
+                    flag = true;
+                }
+                if (email.match(/^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/) == null) {
+                    $("span[name=emailMsg]").text("邮箱格式不合法！");
+                    flag = true;
+                }
+                if ((password.match(/^\w{5,12}$/) == null)) {
+                    $("span[name=pwdMsg]").html("密码不合法！");
+                    flag = true;
+                }
+                if (password != repassword) {
+                    $("span[name=repwdMsg]").html("密码不一致！");
+                    flag = true;
+                }
+                if(flag){
+                    return;
+                }
+                //验证账号密码
+                $.ajax({
+                    url: "user/signup",
+                    type: "POST",
+                    data: {
+                        userName: username,
+                        email: email,
+                        nickName: nickname,
+                        passWord: password,
+                        code: code
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.code == 0) {
+                            layer.msg("注册成功，即将跳到登陆页面", {time: 2000}, function () {
+                                location.href = "http://localhost:8080/video/tologin";
+                            });
+                        } else if (data.code == 5) {
+                            $("span[name=codeMsg]").html("验证码错误！",{icon:2});
+                            $("#code_img").click();
+                        } else {
+                            $("span[name=codeMsg]").html("注册失败",{icon:2})
+                        }
+                    }
+                })
+            })
+
+            $("#username").blur(function () {
+                var usernametest = /^\w{5,12}$/;
+                var usernamevar = $("#username").val();
+                if ($("#username").val() == null || $("#username").val() == "") {
+                    $("span[name=unameMsg]").html("用户名不能为空！");
+                } else if (!usernametest.test(usernamevar)){
+                    $("span[name=unameMsg]").html("用户名不合法！");
+                } else {
+                    existsUsername(usernamevar);
+                }
+            });
+
+            $("#email").blur(function () {
+                var emailtest = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
+                var emailvar = $("#email").val();
+                if ($("#email").val() == null || $("#email").val() == "") {
+                    $("span[name=emailMsg]").html("邮箱不能为空！");
+                } else if (!emailtest.test(emailvar)){
+                    $("span[name=emailMsg]").html("邮箱格式不合法！");
+                } else {
+                    existsEmail(emailvar);
+                }
+            });
+
+            $("#nickname").blur(function () {
+                var phonetest = /^.{2,12}$/;
+                var phonevar = $("#nickname").val();
+                if ($("#nickname").val() == null || $("#nickname").val() == "") {
+                    $("span[name=nickMsg]").html("昵称不能为空！");
+                } else if (!phonetest.test(phonevar)){
+                    $("span[name=nickMsg]").html("昵称格式不合法！");
+                }
+            });
+
+            $("#password").blur(function () {
+                var passwordtest = /^\w{5,12}$/;
+                var passwordvar = $("#password").val();
+                if ($("#password").val() == null || $("#password").val() == "") {
+                    $("span[name=pwdMsg]").html("密码不能为空！");
+                } else if (!passwordtest.test(passwordvar)){
+                    $("span[name=pwdMsg]").html("密码不合法！");
+                }
+            });
+
+            $("#repassword").blur(function () {
+                var passwordvar = $("#password").val();
+                var repasswordvar = $("#repassword").val();
+                if ($("#repassword").val() == null || $("#repassword").val() == "") {
+                    $("span[name=repwdMsg]").html("确认密码不能为空！");
+                } else if (passwordvar != repasswordvar){
+                    $("span[name=repwdMsg]").html("密码不一致！");
+                }
+            });
+
+            $("#code").blur(function () {
+                var codevar = $("#code").val();
+                if ($("#code").val() == null || $("#code").val() == "") {
+                    $("span[name=codeMsg]").html("请输入验证码！");
+                }
+            });
+
+            // 给验证码的图片，绑定单击事件
+            $("#code_img").click(function () {
+                // alert(this.src);
+                this.src = "http://localhost:8080/video/captcha";
+            });
+
+            //清除消息
+            $("#username").focus(function () {
+                $("span[name=unameMsg]").html("");
+            })
+            $("#email").focus(function () {
+                $("span[name=emailMsg]").html("");
+            })
+            $("#nickname").focus(function () {
+                $("span[name=nickMsg]").html("");
+            })
+            $("#password").focus(function () {
+                $("span[name=pwdMsg]").html("");
+            })
+            $("#repassword").focus(function () {
+                $("span[name=repwdMsg]").html("");
+            })
+            $("#code").focus(function () {
+                $("span[name=codeMsg]").html("");
+            })
+        })
+    </script>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <section class="banner-section p120">
+        <div class="container">
+            <div class="banner-text">
+                <h2>注册</h2>
+                <p>请注册账号以访问所有视频和更多内容.</p>
+            </div><!--banner-text end-->
+        </div>
+    </section><!--banner-section end-->
+
+    <section class="form_popup">
+
+        <div class="signup_form" id="signup_form">
+            <div class="hd-lg">
+                <img src="static/images/logo.png" alt="">
+                <span>注册你的视频账户</span>
+            </div><!--hd-lg end-->
+            <div class="user-account-pr">
+                <form method="post" action="" onsubmit="return false">
+                    <div class="input-sec mgb25">
+                        <input type="text" name="username" id="username" placeholder="用户名">
+                        <label>长度为5-12个字符 由字母和数字组成 _</label>
+                        <span name="unameMsg" style="text-align: center;display:block;color: red;float: right"></span>
+                    </div>
+                    <div class="input-sec">
+                        <input type="text" name="nickname" id="nickname" placeholder="昵称" required>
+                        <label>长度为2-12个字符 _</label>
+                        <span name="nickMsg" style="text-align: center;display:block;color: red;float: right"></span>
+                    </div>
+                    <div class="input-sec">
+                        <input type="email" name="email" id="email" placeholder="邮箱" required>
+                        <label></label>
+                        <span name="emailMsg" style="text-align: center;display:block;color: red;float: right"></span>
+                    </div>
+
+                    <div class="input-sec">
+                        <input type="Password" name="password" id="password" placeholder="密码" required>
+                        <label>长度为5-12个字符 由字母和数字组成 _</label>
+                        <span name="pwdMsg" style="text-align: center;display:block;color: red;float: right"></span>
+                    </div>
+                    <div class="input-sec">
+                        <input type="password" name="repassword" id="repassword" placeholder="确认密码"
+                               required>
+                        <span name="repwdMsg" style="text-align: center;display:block;color: red;float: right"></span>
+                    </div>
+                    <div class="input-sec">
+                        <label>验证码：</label>
+                        <input type="text" style="width: 150px;" id="code" name="code"/>
+                        <img style="width:70px;height:25px;float: right; margin-right: 40px" alt=""
+                             th:src="@{captcha}" id="code_img">
+                        <span name="codeMsg" style="text-align: center;display:block;color: red"></span>
+                    </div>
+                    <div class="input-sec mb-0">
+                        <button type="submit" id="signup">注册</button>
+                    </div><!--input-sec end-->
+                </form>
+            </div><!--user-account end--->
+            <div class="fr-ps">
+                <h1>已经有账户了？<a th:href="@{tologin}" title="" class="show_signup"> 点击登录.</a></h1>
+            </div><!--fr-ps end-->
+        </div><!--login end--->
+
+    </section><!--form_popup end-->
+
+
+</div><!--wrapper end-->
+
+
+</body>
+</html>

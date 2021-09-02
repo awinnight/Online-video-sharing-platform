@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wk.video.mapper.UserMapper">
+
+    <select id="getUserAllByUname" resultType="User">
+        select a.id,a.username,a.nickname,a.password,a.email,a.roleid,a.sign,a.status from `user` a
+        where 	a.username = #{username}
+    </select>
+
+    <select id="getUsers" resultType="User">
+        SELECT a.id, username, password, email, roleid, sign, nickname, status,b.name rolename
+        FROM video.user a
+        LEFT JOIN video.role b ON a.roleid = b.id
+        <trim prefix="where" prefixOverrides="AND ">
+            <if test="email != null">
+                a.email = #{email}
+            </if>
+            <if test="userName != null">
+                a.userName = #{userName}
+            </if>
+            <if test="nickName != null">
+                a.nickName = #{nickName}
+            </if>
+            AND roleid=1
+        </trim>
+        order by a.id asc
+    </select>
+
+    <select id="getManagerUsers" resultType="User">
+        SELECT a.id, username, password, email, roleid, sign, nickname, status,b.name rolename
+        FROM video.user a
+        LEFT JOIN video.role b ON a.roleid = b.id
+        <trim prefix="where" prefixOverrides="AND ">
+            <if test="email != null">
+                a.email = #{email}
+            </if>
+            <if test="userName != null">
+                a.userName = #{userName}
+            </if>
+            <if test="nickName != null">
+                a.nickName = #{nickName}
+            </if>
+            AND roleid != 1
+            AND a.id != #{id}
+        </trim>
+        order by a.id asc
+    </select>
+
+
+</mapper>

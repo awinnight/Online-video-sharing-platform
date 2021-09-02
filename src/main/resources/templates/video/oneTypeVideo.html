@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <link rel="icon" th:href="@{static/images/logo.png}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/animate.css}">
+    <link rel="stylesheet" type="text/css"
+          th:href="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/static/lib/layui/css/layui.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/flatpickr.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello-codes.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/thumbs-embedded.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/responsive.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/color.css}">
+</head>
+
+<body>
+
+<div class="wrapper">
+    <header>
+        <div class="top_bar">
+            <div class="container">
+                <div class="top_header_content">
+                    <div class="menu_logo">
+                        <a href="#" title="" class="logo">
+                            <img th:src="@{static/images/logo.png}" alt="">
+                        </a>
+                    </div><!--menu_logo end-->
+                    <div class="search_form">
+                        <form>
+                            <input type="text" name="search" placeholder="搜索视频" id="search">
+                            <button type="button" id="searchbtn">
+                                <i class="icon-search"></i>
+                            </button>
+                        </form>
+                    </div><!--search_form end-->
+                    <ul shiro:user="" class="controls-lv">
+                        <li class="user-log">
+                            <div class="user-ac-img">
+                                <img th:src="@{static/images/resources/user-img.png}" alt="">
+                            </div>
+                            <div class="account-menu">
+                                <h4 th:text="${session.login_user.nickName}">
+                                </h4>
+                                <div class="sd_menu">
+                                    <ul class="mm_menu">
+                                        <li>
+												<span>
+													<i class="icon-user"></i>
+												</span>
+                                            <a th:href="@{usersetting}" title="">我的账户</a>
+                                        </li>
+                                        <li>
+												<span>
+													<i class="icon-playlist"></i>
+												</span>
+                                            <a th:href="@{videomanage}" title="">视频管理</a>
+                                        </li>
+                                        <li>
+												<span>
+													<i class="icon-logout"></i>
+												</span>
+                                            <a href="UserServlet?action=logout" title="">登出</a>
+                                        </li>
+                                    </ul>
+                                </div><!--sd_menu end-->
+                            </div>
+                        </li>
+                        <li>
+                            <a th:href="@{toUpload}" title="" class="btn-default">上传</a>
+                        </li>
+                    </ul>
+                    <!--controls-lv end-->
+                    <div class="clearfix"></div>
+                </div><!--top_header_content end-->
+            </div>
+        </div><!--header_content end-->
+        <div class="btm_bar">
+            <div class="container">
+                <div class="btm_bar_content">
+                    <nav>
+                        <ul>
+                            <li><a th:href="@{index}" title="">首页</a>
+                                <div class="mega-menu">
+                                    <ul>
+                                        <div th:each="typeA:${ session.typeAList }">
+                                            <li><a href="#" title="" th:text="${ typeA.getTypeA() } + ''"></a>
+                                                <ul>
+                                                    <div th:each="typeB:${ session.typeBMap.get(typeA.getTypeA()) }">
+                                                        <li><a th:href="${ 'toOneTypeVideo?id=' + typeB.getId()}" title="" th:text="${ typeB.getTypeB() }"></a></li>
+                                                    </div>
+
+                                                </ul>
+                                            </li>
+                                        </div>
+
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav><!--navigation end-->
+                    <ul shiro:user="" class="shr_links">
+                        <li>
+                            <h3>Go to : </h3>
+                        </li>
+                        <li>
+                            <button data-toggle="tooltip" data-placement="top" title="收藏视频"
+                                    onclick="window.location.href='http://localhost:8080/video/toCollectionPage'">
+                                <i class="icon-like"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button data-toggle="tooltip" data-placement="top" title="历史记录"
+                                    onclick="window.location.href='http://localhost:8080/video/toHistoryPage'">
+                                <i class="icon-history"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <!--shr_links end-->
+                    <div class="clearfix"></div>
+                </div><!--btm_bar_content end-->
+            </div>
+        </div><!--btm_bar end-->
+    </header><!--header end-->
+
+    <div class="tab-content p-0" id="myTabContent">
+        <div class="tab-pane fade show active" id="vvideo_tabz" role="tabpanel" aria-labelledby="videos_taab">
+            <div class="videso_tb_details">
+                <div class="container">
+                    <div class="vidz_sec">
+                        <h3 th:text="${ videoType.getTypeB() }"></h3>
+                        <a href="#" title=""><i class="icon-sort_by"></i>Sort By</a>
+                        <div class="clearfix"></div>
+                        <div class="vidz_list">
+                            <form class="layui-form layui-col-md12 x-so" id="queryTrainschemeForm">
+                                <input type="hidden" name="pageNum">
+                                <input type="hidden" name="typeid" th:value="${ videoType.getId() }">
+                            </form>
+
+                            <div class="row">
+
+                                <div class="row" id="newvideo">
+
+                            </div>
+                        </div><!--vidz_list end-->
+                    </div><!--vidz_videos end-->
+                </div>
+                    <div id="demo7" style="text-align: center"></div>
+                    <br><br>
+            </div><!--videso_tb_details end-->
+        </div>
+    </div>
+    </div>
+
+</div><!--wrapper end-->
+
+
+<script type="text/javascript" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{static/js/popper.js}"></script>
+<script type="text/javascript" th:src="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{static/js/flatpickr.js}"></script>
+<script type="text/javascript" th:src="@{static/js/script.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+<script>
+    $(function () {
+        queryTrainSchemeFY()
+    })
+
+
+    function queryTrainSchemeFY(){
+        $.ajax({
+            url:"video/getVideoByType",
+            data:$("#queryTrainschemeForm").serialize(),
+            dataType:'json',
+            type:'post',
+            // async:true,
+            success:showTrainSchemeTable
+        });
+    }
+
+    function showTrainSchemeTable(pageInfo){
+        var total = pageInfo.total;//页总数
+        var pageNum = pageInfo.pageNum;//页号
+        var pageSize = pageInfo.pageSize;//页大小
+
+        var trainschemes = pageInfo.list;
+        $("#newvideo").html("");//清空表格中数据并重新填充数据
+        $.each(trainschemes,function (index,value) {
+            var videodiv = "<div class=\"col-lg-3 col-md-6 col-sm-6 col-6 full_wdth\">" +
+                "                                <div class=\"videoo\">" +
+                "                                    <div class=\"vid_thumbainl\">" +
+                "                                        <a href=\"http://localhost:8080/video/singlevideopage?id="+value.id+"\"\ >" +
+                "                                            <img src=\"http://localhost:8080/video/static/"+value.coverUrl +"\"style=\"min-width:260px;min-height:180px;max-height: 180px\"\>" +
+                "                                            <span class=\"vid-time\">29:32</span>" +
+                "                                            <span class=\"watch_later\">" +
+                "<i class=\"glyphicon-star-empty\"></i>" +
+                "</span>" +
+                "                                        </a>" +
+                "                                    </div><!--vid_thumbnail end-->" +
+                "                                    <div class=\"video_info\">" +
+                "                                        <h3>  <a href=http://localhost:8080/video/singlevideopage?id="+value.id+"\" title=\"\">"+value.title+"</a></h3>" +
+                "                                        <h4><a href=\"pages/video/singlechannel.jsp?\" title=\"\">"+value.nickName+"\</a></h4>" +
+                "                                        <span>"+value.views+"次观看 .<small class=\"posted_dt\">"+value.createTime+"</small></span>" +
+                "                                    </div>" +
+                "                                </div><!--videoo end-->" +
+                "                            </div>";
+            $("#newvideo").append(videodiv);
+        });
+
+
+        //开启分页组件
+        trainschemesPage(total,pageNum,pageSize);
+    }
+
+
+    function trainschemesPage(total,pageNum,pageSize){
+        //使用layui的分页插件
+        layui.use(['laypage', 'layer'], function(){
+            var laypage = layui.laypage,layer = layui.layer;
+
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'demo7', //注意，这里的 test1 是 ID，不用加 # 号
+                count: total, //数据总数，从服务端得到
+                limit:12,//每页显示的条数。laypage将会借助 count 和 limit 计算出分页数。
+                curr:pageNum,//当前页号
+                layout:['count', 'prev', 'page', 'next', 'skip'],//显示哪些分页组件
+                jump: function(obj, first){//点击页号的时候执行的函数
+
+                    $("[name='pageNum']").val(obj.curr);//向隐藏域设置当前页的值
+                    $("[name='pageSize']").val(obj.limit);//向隐藏域设置当前页的大小
+                    if(!first){//首次不执行(点击的时候才执行)
+                        queryTrainSchemeFY();//执行查询分页函数(这个函数必须写在这里)
+                    }
+                }
+
+            });
+        });
+    }
+
+</script>
+
+</body>
+</html>

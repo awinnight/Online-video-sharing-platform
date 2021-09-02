@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wk.video.mapper.VideoMapper">
+
+    <!-- 查询最新视频-->
+    <select id="queryVideoNearDay" resultType="Video">
+        select a.id, a.uploader, a.title, a.descr, a.typeid, a.views, a.coverurl, a.videourl, a.createtime,b.nickname nickName
+        from `video` a LEFT JOIN user b ON b.id = a.uploader
+        WHERE a.status = '1'
+        ORDER BY createtime DESC
+    </select>
+
+    <!-- 查询最新视频-->
+    <select id="queryVideoHot" resultType="Video">
+        select a.id, a.uploader, a.title, a.descr, a.typeid, a.views, a.coverurl, a.videourl, a.createtime,b.nickname nickName
+        from `video` a LEFT JOIN user b ON b.id = a.uploader
+        WHERE a.status = '1'
+        ORDER BY views DESC
+    </select>
+
+    <!-- 查询分类视频-->
+    <select id="queryVideoByType" resultType="Video">
+        select a.id, a.uploader, a.title, a.descr, a.typeid, a.views, a.coverurl, a.videourl, a.createtime,b.nickname nickName
+        from `video` a LEFT JOIN user b ON b.id = a.uploader
+        WHERE a.status = '1' AND a.typeid = #{typeid} AND a.id != #{id}
+        ORDER BY views DESC
+    </select>
+
+    <!-- 查询未审核视频-->
+    <select id="getExamine" resultType="Video">
+        select a.id,a.uploader,a.title,a.descr,a.typeid,a.status,a.createtime,b.username userName,c.typeB type
+        from video a
+        LEFT JOIN user b ON a.uploader = b.id
+        LEFT JOIN videotype c ON a.typeid = c.id
+        <trim prefix="where" prefixOverrides="AND ">
+            <if test="startTime != null ">
+                AND UNIX_TIMESTAMP(createtime) &gt; UNIX_TIMESTAMP(#{startTime})
+            </if>
+            <if test="endTime != null ">
+                AND UNIX_TIMESTAMP(createtime) &lt; UNIX_TIMESTAMP(#{endTime})
+            </if>
+            <if test="uploader != null ">
+                AND b.username = #{uploader}
+            </if>
+            <if test="title != null ">
+                AND title = #{title}
+            </if>
+            AND a.status = '0'
+        </trim>
+    </select>
+
+
+    <!-- 查询已审核视频-->
+    <select id="getVideolist" resultType="Video">
+        select a.id,a.uploader,a.title,a.descr,a.typeid,a.status,a.createtime,b.username userName,c.typeB type
+        from video a
+        LEFT JOIN user b ON a.uploader = b.id
+        LEFT JOIN videotype c ON a.typeid = c.id
+        <trim prefix="where" prefixOverrides="AND ">
+            <if test="startTime != null ">
+                AND UNIX_TIMESTAMP(createtime) &gt; UNIX_TIMESTAMP(#{startTime})
+            </if>
+            <if test="endTime != null ">
+                AND UNIX_TIMESTAMP(createtime) &lt; UNIX_TIMESTAMP(#{endTime})
+            </if>
+            <if test="uploader != null ">
+                AND b.username = #{uploader}
+            </if>
+            <if test="title != null ">
+                AND title = #{title}
+            </if>
+            AND a.status in('1','-2')
+        </trim>
+    </select>
+
+    <select id="getPass" resultType="Video">
+        select a.id, a.uploader, a.title, a.descr, a.typeid, a.views, a.coverurl, a.videourl, a.createtime,b.nickname nickName
+        from `video` a LEFT JOIN user b ON b.id = a.uploader
+        WHERE a.status = '1' AND  a.uploader = #{id}
+        ORDER BY createtime DESC
+    </select>
+
+
+    <select id="getAudit" resultType="Video">
+        select a.id, a.uploader, a.title, a.descr, a.typeid, a.views, a.coverurl, a.videourl, a.createtime,b.nickname nickName
+        from `video` a LEFT JOIN user b ON b.id = a.uploader
+        WHERE a.status = '0' AND  a.uploader = #{id}
+        ORDER BY createtime DESC
+    </select>
+
+    <select id="getFail" resultType="Video">
+        select a.id, a.uploader, a.title, a.descr, a.typeid, a.views, a.coverurl, a.videourl, a.createtime,b.nickname nickName
+        from `video` a LEFT JOIN user b ON b.id = a.uploader
+        WHERE a.status = '-2' AND  a.uploader = #{id}
+        ORDER BY createtime DESC
+    </select>
+
+    <select id="searchVideo" resultType="Video">
+        select a.id, a.uploader, a.title, a.descr, a.typeid, a.views, a.coverurl, a.videourl, a.createtime,b.nickname nickName
+        from `video` a LEFT JOIN user b ON b.id = a.uploader
+        <trim prefix="where" prefixOverrides="AND ">
+            <if test=" search != null ">
+                AND (a.title like '%${search}%' OR b.nickName like '%${search}%')
+            </if>
+            AND a.status = '1'
+        </trim>
+        ORDER BY views DESC
+    </select>
+
+</mapper>

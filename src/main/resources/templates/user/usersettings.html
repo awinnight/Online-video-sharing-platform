@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <link rel="icon" th:href="@{static/images/logo.png}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/animate.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/flatpickr.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello-codes.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/thumbs-embedded.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/responsive.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/color.css}">
+
+</head>
+<body>
+
+<div class="wrapper">
+
+    <header>
+        <div class="top_bar">
+            <div class="container">
+                <div class="top_header_content">
+                    <div class="menu_logo">
+                        <a href="#" title="" class="logo">
+                            <img th:src="@{static/images/logo.png}" alt="">
+                        </a>
+                    </div><!--menu_logo end-->
+                    <div class="search_form">
+                        <form>
+                            <input type="text" name="search" placeholder="搜索视频" id="search">
+                            <button type="button" id="searchbtn">
+                                <i class="icon-search"></i>
+                            </button>
+                        </form>
+                    </div><!--search_form end-->
+                    <ul shiro:user="" class="controls-lv">
+                        <li class="user-log">
+                            <div class="user-ac-img">
+                                <img th:src="@{static/images/resources/user-img.png}" alt="">
+                            </div>
+                            <div class="account-menu">
+                                <h4 th:text="${session.login_user.nickName}">
+                                </h4>
+                                <div class="sd_menu">
+                                    <ul class="mm_menu">
+                                        <li>
+												<span>
+													<i class="icon-user"></i>
+												</span>
+                                            <a th:href="@{usersetting}" title="">我的账户</a>
+                                        </li>
+                                        <li>
+												<span>
+													<i class="icon-playlist"></i>
+												</span>
+                                            <a th:href="@{videomanage}" title="">视频管理</a>
+                                        </li>
+                                        <li>
+												<span>
+													<i class="icon-logout"></i>
+												</span>
+                                            <a href="UserServlet?action=logout" title="">登出</a>
+                                        </li>
+                                    </ul>
+                                </div><!--sd_menu end-->
+                            </div>
+                        </li>
+                        <li>
+                            <a th:href="@{toUpload}" title="" class="btn-default">上传</a>
+                        </li>
+                    </ul>
+                    <!--controls-lv end-->
+                    <div class="clearfix"></div>
+                </div><!--top_header_content end-->
+            </div>
+        </div><!--header_content end-->
+        <div class="btm_bar">
+            <div class="container">
+                <div class="btm_bar_content">
+                    <nav>
+                        <ul>
+                            <li><a th:href="@{index}" title="">首页</a>
+                                <div class="mega-menu">
+                                    <ul>
+                                        <div th:each="typeA:${ session.typeAList }">
+                                            <li><a href="#" title="" th:text="${ typeA.getTypeA() } + ''"></a>
+                                                <ul>
+                                                    <div th:each="typeB:${ session.typeBMap.get(typeA.getTypeA()) }">
+                                                        <li><a th:href="${ 'toOneTypeVideo?id=' + typeB.getId()}" title="" th:text="${ typeB.getTypeB() }"></a></li>
+                                                    </div>
+
+                                                </ul>
+                                            </li>
+                                        </div>
+
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav><!--navigation end-->
+                    <ul shiro:user="" class="shr_links">
+                        <li>
+                            <h3>Go to : </h3>
+                        </li>
+                        <li>
+                            <button data-toggle="tooltip" data-placement="top" title="收藏视频"
+                                    onclick="window.location.href='http://localhost:8080/video/toCollectionPage'">
+                                <i class="icon-like"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button data-toggle="tooltip" data-placement="top" title="历史记录"
+                                    onclick="window.location.href='http://localhost:8080/video/toHistoryPage'">
+                                <i class="icon-history"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <!--shr_links end-->
+                    <div class="clearfix"></div>
+                </div><!--btm_bar_content end-->
+            </div>
+        </div><!--btm_bar end-->
+    </header><!--header end-->
+
+
+    <section class="user-account">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="sidebar">
+                        <div class="widget video_info pr sp">
+								<span class="vc_hd">
+									<img th:src="@{static/images/resources/user-img.png}" alt="">
+								</span>
+                            <h4 th:text="${session.login_user.nickName}"></h4>
+                            <span>Last Login: 42 minutes ago</span>
+                        </div><!--video_info pr-->
+                        <div class="widget account">
+                            <h2 class="hd-uc"><i class="icon-user"></i> 我的账户</h2>
+                            <a th:href="@{usersetting}">个人资料修改</a>
+                        </div><!--account end-->
+                        <div class="widget donation">
+                            <h2 class="hd-uc"><i class="icon-playlist"></i>视频管理 </h2>
+                            <ul>
+                                <li><a th:href="@{videomanage}">已上传视频</a></li>
+                                <li><a th:href="@{videomanage}">待审核视频</a></li>
+                                <li><a th:href="@{videomanage}">下架视频</a></li>
+                            </ul>
+                        </div><!--donation end-->
+                    </div><!--sidebar end-->
+                </div>
+                <div class="col-lg-9">
+                    <div class="video-details">
+
+
+                        <div class="account-details">
+                            <div class="account_details_content">
+                                <h2 class="hd-op"> 个人资料 </h2>
+                                <form onsubmit="return false">
+
+                                    <h4 class="slct-hd">用户名</h4>
+                                    <div class="ch-pswd">
+                                        <input type="text" name="userName" id="userName" placeholder="userName" th:value="${ session.login_user.userName }">
+                                        <input type="text" name="uName" id="uName" th:value="${session.login_user.userName}" hidden>
+                                        <label>长度为5-12个字符 由字母和数字组成 </label>
+                                        <span name="unameMsg" style="text-align: center;display:block;color: red"></span>
+                                    </div><!--ch-pswd end-->
+
+                                    <h4 class="slct-hd">昵称</h4>
+                                    <div class="ch-pswd">
+                                        <input type="text" name="nickName" id="nickName" placeholder="nickName" th:value="${ session.login_user.nickName }">
+                                        <label>长度为2-12个字符 </label>
+                                        <span name="nickMsg" style="text-align: center;display:block;color: red"></span>
+                                    </div><!--ch-pswd end-->
+
+                                    <h4 class="slct-hd">邮箱</h4>
+                                    <div class="ch-pswd">
+                                        <input type="email" name="email" id="email" placeholder="email" th:value="${ session.login_user.email }">
+                                        <input type="text" name="uemail" id="uemail" th:value="${session.login_user.email}" hidden>
+                                        <span name="emailMsg" style="text-align: center;display:block;color: red"></span>
+                                    </div><!--ch-pswd end-->
+
+                                        <h4 class="slct-hd">个性签名</h4>
+                                        <div class="ch-pswd">
+                                            <input name="sign" id="sign" placeholder="sign" th:value="${ session.login_user.sign }"></input>
+                                        </div>
+
+                                    <div class="ch-pswd">
+                                        <button type="submit" id="update"> Update</button>
+                                    </div><!--ch-pswd end-->
+                                </form>
+                            </div><!--account_details_content end-->
+                            <div class="clearfix"></div>
+                        </div><!--Account Details end-->
+
+                        <div class="change-pswd">
+                            <h2 class="hd-op">修改密码</h2>
+                            <label>长度为5-12个字符 由字母和数字组成 </label>
+                            <form onsubmit="return false">
+                                <div class="ch-pswd">
+                                    <input type="password" name="old_password" id="old_password" placeholder="Old Password">
+                                    <input type="text" name="pass" id="pass" th:value="${session.login_user.passWord}" hidden>
+                                    <span name="oldpwdMsg" style="text-align: center;display:block;color: red"></span>
+                                </div><!--ch-pswd end-->
+                                <div class="ch-pswd">
+                                    <input type="password" name="password" id="password" placeholder=" New Password">
+                                    <span name="pwdMsg" style="text-align: center;display:block;color: red"></span>
+                                </div><!--ch-pswd end-->
+                                <div class="ch-pswd">
+                                    <input type="password" name="repassword" id="repassword" placeholder="Confirm New Password">
+                                    <span name="repwdMsg" style="text-align: center;display:block;color: red"></span>
+                                </div><!--ch-pswd end-->
+                                <div class="ch-pswd">
+                                    <button type="submit" id="updatepassword"> Update</button>
+                                </div><!--ch-pswd end-->
+                            </form>
+                        </div><!--change-pswd end-->
+
+                    </div><!--video-details end-->
+                </div>
+            </div>
+        </div>
+    </section><!--user-account end-->
+
+</div><!--wrapper end-->
+
+<script th:src="@{static/js/jquery.min.js}"></script>
+<script th:src="@{static/js/popper.js}"></script>
+<script th:src="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/js/bootstrap.min.js}"></script>
+<script th:src="@{static/js/flatpickr.js}"></script>
+<script th:src="@{static/js/script.js}"></script>
+<script th:src="@{static/js/layer/layer.js}"></script>
+<script>
+    function existsUsername(username){
+        var flag = true;
+        $.ajax({
+            url: "user/existsUsername",
+            type: "POST",
+            data: {
+                username: username
+            },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.code != 0) {
+                    $("span[name=unameMsg]").html("用户名已被使用！");
+                    flag = false;
+                }
+            }
+        })
+        return flag;
+    }
+
+    function existsEmail(email){
+        var flag = true;
+        $.ajax({
+            url: "user/existsEmail",
+            type: "POST",
+            data: {
+                email: email
+            },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.code != 0) {
+                    $("span[name=emailMsg]").html("邮箱已被注册！");
+                    flag = false;
+                }
+            }
+        })
+        return flag;
+    }
+
+    $(function () {
+        //修改个人信息
+        $("#update").click(function () {
+            var nickName = $("#nickName").val();
+            var email = $("#email").val();
+            var userName = $("#userName").val();
+            var sign = $("#sign").val();
+            var flag = false;
+            var uName = $("#uName").val();
+            var uemail = $("#uemail").val();
+            //输入验证
+            if ((nickName == "") || (email == "") || (userName == "")) {
+                flag = true;
+            }
+            if(userName != uName){
+                flag = !existsUsername(userName);
+            }
+            if(email != uemail){
+                flag = !existsEmail(email);
+            }
+            if ((userName.match(/^\w{5,12}$/) == null)) {
+                $("span[name=unameMsg]").html("用户名不合法！");
+                flag = true;
+            }
+            if (nickName.match(/^.{2,12}$/) == null) {
+                $("span[name=nickMsg]").text("昵称不合法！");
+                flag = true;
+            }
+            if (email.match(/^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/) == null) {
+                $("span[name=emailMsg]").text("邮箱格式不合法！");
+                flag = true;
+            }
+            if(flag){
+                return;
+            }
+            //执行修改个人信息
+            $.ajax({
+                url: "user/update",
+                type: "POST",
+                data: {
+                    userName: userName,
+                    nickName: nickName,
+                    email: email,
+                    sign: sign,
+                    flag: 0
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.code == 0) {
+                        layer.msg("个人资料修改成功", {time: 2000}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg("个人资料修改失败", {time: 2000});
+                    }
+                }
+            })
+        })
+
+        //修改密码
+        $("#updatepassword").click(function () {
+            var pass = $("#pass").val();
+            var old_password = $("#old_password").val();
+            var password = $("#password").val();
+            var repassword = $("#repassword").val();
+            var flag = false;
+            //输入验证
+            if ((old_password == "") || (password == "") || (repassword == "")) {
+                flag = true;
+            }
+            if (old_password != pass) {
+                $("span[name=oldpwdMsg]").html("密码输入错误！");
+                flag = true;
+            }
+            if ((password.match(/^\w{5,12}$/) == null)) {
+                $("span[name=pwdMsg]").html("密码不合法！");
+                flag = true;
+            }
+            if (password != repassword) {
+                $("span[name=repwdMsg]").html("密码不一致！");
+                flag = true;
+            }
+            if(flag){
+                return;
+            }
+            //执行修改密码
+            $.ajax({
+                url: "user/update",
+                type: "POST",
+                data: {
+                    flag: 1,
+                    passWord: password
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.code == 0) {
+                        layer.msg("密码修改成功", {time: 1000}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg("密码修改失败", {icon:2});
+                    }
+                }
+            })
+        })
+
+
+        //格式验证
+        $("#userName").blur(function () {
+            var uName = $("#uName").val();
+            var usernametest = /^\w{5,12}$/;
+            var usernamevar = $("#userName").val();
+            if ($("#userName").val() == null || $("#userName").val() == "") {
+                $("span[name=unameMsg]").html("用户名为空！");
+            } else if (!usernametest.test(usernamevar)){
+                $("span[name=unameMsg]").html("用户名不合法！");
+            } else if(usernamevar != uName){
+                existsUsername(usernamevar);
+            }
+        });
+
+        $("#email").blur(function () {
+            var uemail = $("#uemail").val();
+            var emailtest = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
+            var emailvar = $("#email").val();
+            if ($("#email").val() == null || $("#email").val() == "") {
+                $("span[name=emailMsg]").html("邮箱为空！");
+            } else if (!emailtest.test(emailvar)){
+                $("span[name=emailMsg]").html("邮箱格式不合法！");
+            } else if(emailvar != uemail){
+                existsEmail(emailvar);
+            }
+        });
+
+        $("#nickName").blur(function () {
+            var phonetest = /^.{2,12}$/;
+            var phonevar = $("#nickName").val();
+            if ($("#nickName").val() == null || $("#nickName").val() == "") {
+                $("span[name=nickMsg]").html("昵称为空！");
+            } else if (!phonetest.test(phonevar)){
+                $("span[name=nickMsg]").html("昵称格式不合法！");
+            }
+        });
+
+        $("#old_password").blur(function () {
+            if ($("#old_password").val() == null || $("#old_password").val() == "") {
+                $("span[name=oldpwdMsg]").html("密码为空！");
+            }
+        });
+
+        $("#password").blur(function () {
+            var passwordtest = /^\w{5,12}$/;
+            var passwordvar = $("#password").val();
+            if ($("#password").val() == null || $("#password").val() == "") {
+                $("span[name=pwdMsg]").html("密码为空！");
+            } else if (!passwordtest.test(passwordvar)){
+                $("span[name=pwdMsg]").html("密码不合法！");
+            }
+        });
+
+        $("#repassword").blur(function () {
+            var passwordvar = $("#password").val();
+            var repasswordvar = $("#repassword").val();
+            if ($("#repassword").val() == null || $("#repassword").val() == "") {
+                $("span[name=repwdMsg]").html("确认密码为空！");
+            } else if (passwordvar != repasswordvar){
+                $("span[name=repwdMsg]").html("密码不一致！");
+            }
+        });
+
+    })
+
+        //清除消息
+        $("#nickName").focus(function () {
+            $("span[name=unameMsg]").html("");
+        })
+        $("#email").focus(function () {
+            $("span[name=emailMsg]").html("");
+        })
+        $("#phone").focus(function () {
+            $("span[name=phoneMsg]").html("");
+        })
+        $("#password").focus(function () {
+            $("span[name=pwdMsg]").html("");
+        })
+        $("#repassword").focus(function () {
+            $("span[name=repwdMsg]").html("");
+        })
+        $("#old_password").focus(function () {
+            $("span[name=oldpwdMsg]").html("");
+        })
+
+</script>
+
+</body>
+</html>

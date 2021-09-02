@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <link rel="icon" th:href="@{static/images/logo.png}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/animate.css}">
+    <link rel="stylesheet" type="text/css"
+          th:href="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/fontello-codes.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/thumbs-embedded.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/responsive.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/css/color.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{static/cropperjs/dist/cropper.css}">
+</head>
+<style>
+    /*img*/
+    /*{*/
+    /*    height: 100%;*/
+    /*    width: auto;*/
+    /*    left:50%;*/
+    /*    position: relative;*/
+    /*    -webkit-transform: translateX(-50%);*/
+    /*    -ms-transform: translateX(-50%);*/
+    /*    -moz-transform: translateX(-50%);*/
+    /*}*/
+    .cover
+    {
+        /*margin:100px auto;*/
+        width: 260px;
+        height: 180px;
+        overflow: hidden;
+        /*border: 1px solid cornflowerblue;*/
+        position: relative;
+    }
+    .avatar-body {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    .avatar-btns {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        margin-right: 5px;
+        /*float: right;*/
+    }
+</style>
+<body>
+
+<div class="wrapper">
+
+
+    <header>
+        <div class="top_bar">
+            <div class="container">
+                <div class="top_header_content">
+                    <div class="menu_logo">
+                        <a href="#" title="" class="logo">
+                            <img th:src="@{static/images/logo.png}" alt="">
+                        </a>
+                    </div><!--menu_logo end-->
+                    <div class="search_form">
+                        <form>
+                            <input type="text" name="search" placeholder="搜索视频" id="search">
+                            <button type="button" id="searchbtn">
+                                <i class="icon-search"></i>
+                            </button>
+                        </form>
+                    </div><!--search_form end-->
+                    <ul shiro:user="" class="controls-lv">
+                        <li class="user-log">
+                            <div class="user-ac-img">
+                                <img th:src="@{static/images/resources/user-img.png}" alt="">
+                            </div>
+                            <div class="account-menu">
+                                <h4 th:text="${session.login_user.nickName}">
+                                </h4>
+                                <div class="sd_menu">
+                                    <ul class="mm_menu">
+                                        <li>
+												<span>
+													<i class="icon-user"></i>
+												</span>
+                                            <a th:href="@{usersetting}" title="">我的账户</a>
+                                        </li>
+                                        <li>
+												<span>
+													<i class="icon-playlist"></i>
+												</span>
+                                            <a th:href="@{videomanage}" title="">视频管理</a>
+                                        </li>
+                                        <li>
+												<span>
+													<i class="icon-logout"></i>
+												</span>
+                                            <a href="UserServlet?action=logout" title="">登出</a>
+                                        </li>
+                                    </ul>
+                                </div><!--sd_menu end-->
+                            </div>
+                        </li>
+                        <li>
+                            <a th:href="@{toUpload}" title="" class="btn-default">上传</a>
+                        </li>
+                    </ul>
+                    <!--controls-lv end-->
+                    <div class="clearfix"></div>
+                </div><!--top_header_content end-->
+            </div>
+        </div><!--header_content end-->
+        <div class="btm_bar">
+            <div class="container">
+                <div class="btm_bar_content">
+                    <nav>
+                        <ul>
+                            <li><a th:href="@{index}" title="">首页</a>
+                                <div class="mega-menu">
+                                    <ul>
+                                        <div th:each="typeA:${ session.typeAList }">
+                                            <li><a href="#" title="" th:text="${ typeA.getTypeA() } + ''"></a>
+                                                <ul>
+                                                    <div th:each="typeB:${ session.typeBMap.get(typeA.getTypeA()) }">
+                                                        <li><a th:href="${ 'toOneTypeVideo?id=' + typeB.getId()}" title="" th:text="${ typeB.getTypeB() }"></a></li>
+                                                    </div>
+
+                                                </ul>
+                                            </li>
+                                        </div>
+
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav><!--navigation end-->
+                    <ul shiro:user="" class="shr_links">
+                        <li>
+                            <h3>Go to : </h3>
+                        </li>
+                        <li>
+                            <button data-toggle="tooltip" data-placement="top" title="收藏视频"
+                                    onclick="window.location.href='http://localhost:8080/video/toCollectionPage'">
+                                <i class="icon-like"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button data-toggle="tooltip" data-placement="top" title="历史记录"
+                                    onclick="window.location.href='http://localhost:8080/video/toHistoryPage'">
+                                <i class="icon-history"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <!--shr_links end-->
+                    <div class="clearfix"></div>
+                </div><!--btm_bar_content end-->
+            </div>
+        </div><!--btm_bar end-->
+    </header><!--header end-->
+
+
+    <section class="vid-title-sec">
+        <div class="container">
+            <form action="" onsubmit="return false"
+                  method="post" enctype="multipart/form-data">
+
+                <div class="vid-title">
+                    <div class="vid_thumbainl tr">
+                        <h3> 选择视频封面</h3>
+                        <div class="cover">
+                            <img id="browse" th:src="@{static/images/resources/vide1.png}">
+                        </div>
+                        <input id="img-upload" name="coverPic" type="file" hidden/>
+                    </div><!--vid_thumbnail tr end-->
+                    <div style="text-align: center;float: contour">
+                        <h3>选择视频文件</h3>
+                        <!--                        <i class="icon-tick"></i>-->
+                        <div class="btn-sbmit">
+                            <button type="button"><label id="label" for="video-upload" class="custom-file-upload">上传视频
+                            </label></button>
+                        </div><!--btn-sbmit end-->
+                        <input id="video-upload" name="url" type="file" hidden/>
+                    </div>
+                </div>
+                <br><br>
+                <div class="vid-vidz-pr">
+                    <h1 class="title-hd">标题 </h1>
+                    <div class="form_field">
+                        <input type="text" name="title" id="title" placeholder="在此添加标题" required>
+                    </div>
+                </div><!--vid-title-->
+                <div class="abt-vidz-pr">
+                    <h2 class="title-hd"> 视频描述 </h2>
+                    <div class="form_field">
+                        <textarea name="desc" id="desc" placeholder="在此添加描述"></textarea>
+                    </div>
+                </div><!--abt-vidz-->
+
+                <div class="category">
+                    <h2 class="title-hd">标签</h2>
+                    <div class="category-typ">
+                        <ul class="catgss_list">
+                            <div th:each="typeA:${ videoType.get('typeA') }">
+                                <li>
+                                    <div class="chekbox-lg">
+                                        <label>
+                                            <input type="radio" name="typeA" th:value="${ typeA.getId() }"
+                                                   th:onclick="typeB([[${typeA.getTypeA()}]])">
+                                            <b class="checkmark"></b>
+                                            <span th:text="${ typeA.getTypeA() }"></span>
+                                        </label>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                        <h2 class="title-hd">子标签</h2>
+                        <ul class="catgss_list" id="typeB">
+                        </ul>
+                        <br><br>
+                        <div class="clearfix"></div>
+                        <div class="btn-sbmit">
+                            <button type="submit" id="submit">上传</button>
+                        </div><!--btn-sbmit end-->
+                    </div><!--category-typ-->
+                </div><!--Category-->
+            </form>
+        </div>
+    </section><!--vid-title-sec-->
+
+    <!-- Cropping modal -->
+    <div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form class="avatar-form" action="crop.php" enctype="multipart/form-data" method="post">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="avatar-modal-label">封面上传</h4>
+                        <button class="close" data-dismiss="modal" type="button">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="avatar-body">
+
+                            <!-- Crop and preview -->
+                            <div class="row">
+                                <div class="col-md-12">
+<!--                                    <div class="avatar-wrapper">-->
+                                        <img src="" id="imga" style="">
+<!--                                    </div>-->
+                                </div>
+                            </div>
+
+                            <div class="row avatar-btns">
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary btn-block" type="button" id="done">Done</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="modal-footer">
+                      <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                    </div> -->
+                </form>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+
+
+</div><!--wrapper end-->
+
+
+<script type="text/javascript" th:src="@{static/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{static/js/popper.js}"></script>
+<script type="text/javascript" th:src="@{http://cdn.bootstrapmb.com/bootstrap/4.0.0/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{static/js/script.js}"></script>
+<script th:src="@{static/js/layer/layer.js}"></script>
+<script th:src="@{static/cropperjs/dist/cropper.js}"></script>
+<script>
+    function typeB(typeA) {
+        $.ajax({
+            url: "videoType/getTypeB",
+            type: "POST",
+            data: {
+                typeA: typeA
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $("#typeB").empty();
+                $.each(data.data, function (index, value) {
+                    var videodiv = "<li>\n" +
+                        "            <div class=\"chekbox-lg\">\n" +
+                        "                <label>\n" +
+                        "                    <input type=\"radio\" name=\"type\" value=\"" + value.id + "\">\n" +
+                        "                    <b class=\"checkmark\"></b>\n" +
+                        "                    <span>" + value.typeB + "</span>\n" +
+                        "                </label>\n" +
+                        "            </div>\n" +
+                        "        </li>";
+                    $("#typeB").append(videodiv);
+                });
+
+            }
+        });
+
+    }
+
+    $(function () {
+        $("#submit").click(function () {
+            var imgupload = $("#img-upload")[0].files[0];
+            var videoupload = $("#video-upload")[0].files[0];
+            var title = $("#title").val();
+            var desc = $("#desc").val();
+            var flag = false;
+            var type = $("input[name=type]:checked").val();
+            var formData = new FormData();//这里需要实例化一个FormData来进行文件上传
+            if(imgupload == null){
+                layer.msg("未上传封面，请选择封面上传！",{icon:2});
+                return;
+            }
+            if(videoupload == null){
+                layer.msg("未上传视频，请选择视频上传！",{icon:2});
+                return;
+            }
+            if(title == null || title == ""){
+                layer.msg("标题未填写，请填写标题！",{icon:2});
+                return;
+            }
+            if(type == null || type == ""){
+                layer.msg("请选择视频分类！",{icon:2});
+                return;
+            }
+            if(flag){
+                return;
+            }
+            console.log(imgupload)
+            console.log(videoupload)
+            formData.append("coverPic", $("#img-upload")[0].files[0]);
+            formData.append("url", $("#video-upload")[0].files[0]);
+            formData.append("title", $("#title").val());
+            formData.append("type", $("input[name=type]:checked").val());
+            formData.append("desc", $("#desc").val());
+            $.ajax({
+                url: "video/upload",
+                type: "POST",
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data.code)
+                    if (data.code == "0") {
+                        layer.msg("上传成功!", {time: 2000}, function () {
+                            location.href = "http://localhost:8080/video/index";
+                        });
+                    } else {
+                        layer.msg("上传失败，请检查文件后重新上传!");
+                    }
+                }
+            })
+
+        })
+
+
+        //点击browse选择文件
+        $("#browse").click(function () {
+            $('#img-upload').click();
+        });
+
+        var image = document.getElementById('imga');
+        var cropper, canvas;
+        $('#img-upload').change(function(e){
+            $('#avatar-modal').modal();
+            var file;
+            var files = e.target.files;
+            if (files && files.length > 0) {
+                file = URL.createObjectURL(files[0]);
+                $('#imga').attr({'src': file})
+            }
+            cropper = new Cropper(image, {
+                aspectRatio: 13/9,
+                viewMode: 1,
+                minContainerWidth: 730,   //容器最小的宽度
+                minContainerHeight: 450,  //容器最小的高度
+                maxContainerWidth: 731,
+                maxContainerHeight: 451,
+                maxCanvasWidth: 730,
+                maxCanvasHeight: 450,
+                background: false,  //是否显示网格背景
+                zoomable: true,   //是否允许放大图像
+                guides: false,   //是否显示裁剪框虚线
+                crop: function (event) { //剪裁框发生变化执行的函数。
+                    canvas = cropper.getCroppedCanvas({  //使用canvas绘制一个宽和高200的图片
+                        width: 260,
+                        height: 180,
+                    });
+                    $('#browse').attr("src", canvas.toDataURL("image/png", 0.3))  //使用canvas toDataURL方法把图片转换为base64格式
+                }
+            });
+        })
+
+        $("#done").click(function () {
+            cropper.destroy();
+            $('#avatar-modal').modal('hide');
+        })
+
+        //检查图片格式，预览图片
+        $('#img-upload').change(function () {
+            //判断图片格式
+            var fileName = this.value;
+            var suffixIndex = fileName.lastIndexOf(".");
+            var suffix = fileName.substring(suffixIndex + 1).toUpperCase();
+            if (suffix != "JPG" && suffix != "PNG") {
+                alert("请上传png、jpg格式图片!");
+                return;
+            }
+            //解决C:\fakepath问题
+            var oFReader = new FileReader();
+            var file = this.files[0];
+            oFReader.readAsDataURL(file);
+            oFReader.onloadend = function (oFRevent) {
+                var src = oFRevent.target.result;
+                //预览图片
+                $('#browse').attr('src', src);
+            }
+        });
+
+        //检查视频格式
+        $('#video-upload').change(function () {
+            //判断图片格式
+            var fileName = this.value;
+            var suffixIndex = fileName.lastIndexOf(".");
+            var suffix = fileName.substring(suffixIndex + 1).toUpperCase();
+            if (suffix != "MP4" && suffix != "AVI" && suffix != "rmvb") {
+                alert("请上传MP4、avi、rmvb格式视频!");
+                $("#label").html("上传视频");
+                return;
+            } else {
+                $("#label").html("<i class=\"icon-tick\"></i>");
+            }
+        });
+
+
+    })
+</script>
+
+
+</body>
+</html>
