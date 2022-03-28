@@ -5,7 +5,6 @@ Online-video-sharing-platform
 <div align="center">本系统包括面向用户的<b>视频播放模块</b>与<b>后台信息管理模块</b></div>
 <div align="center">视频播放模块主要包含视频搜索、播放、上传分享，用户信息管理、视频管理、视频收藏、观看历史等功能</div>
 <div align="center">后台信息管理模块主要包含用户信息管理，视频管理，视频审核，广告管理，视频分类管理等功能</div>
-<!-- ![lua-5.1](https://img.shields.io/badge/lua-5.1-00007F.svg) ![version-3.x](https://img.shields.io/badge/version-3.x-56B6C2.svg) ![g502-✔](https://img.shields.io/badge/g502-✔-98C379.svg) ![gpw-✖](https://img.shields.io/badge/gpw-✖-E06C75.svg) -->
 
 ---
 ### 相关技术
@@ -125,3 +124,46 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 ```
+### 部分界面展示
+
+#### 客户端
+
+* **客户端登录**
+![image](image/51.png)
+---
+* **客户端注册**
+![image](image/54.png)
+---
+* **首页**
+![image](image/55.png)
+---
+* **个人信息**
+![image](image/59.png)
+---
+* **视频搜索**
+![image](image/512.png)
+---
+* **视频播放**
+![image](image/513.png)
+---
+* **视频上传**
+![image](image/514.png)
+---
+
+#### 后台
+
+* **视频审核列表**
+![image](image/515.png)
+---
+* **视频审核**
+![image](image/516.png)
+---
+* **管理员管理**
+![image](image/518.png)
+---
+* **广告管理**
+![image](image/520.png)
+---
+
+### 声明
+* **该程序仅供学习交流。**
