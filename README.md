@@ -1,5 +1,140 @@
 <h1 align="center">
 Online-video-sharing-platform
+
+The system includes **a user-oriented video playback module** and **a background information management module**.
+
+Video playback module mainly contains video search, play, upload and share, user information management, video management, video collection, viewing history and other functions.
+
+Background information management module mainly contains user information management, video management, video audit, advertising management, video category management and other functions.
+
+# Technology
+
+## Project Development Environment and Technology
+
+* **Languages**: Java, JavaScript, Html
+* **Development Tools**: IDEA 2019, Navicat
+* **Database**: MySQL 5.7
+* **Server**: Tomcat 8.0
+* **Front-end part using technology**: HTML tags and CSS styles for the overall design of the interface, with Bootstrap framework and LayUI framework to complete a simple and practical interface, and the use of JavaScript language, ajax technology and JQuery framework to achieve the interactive effects of the front-end page and the interaction with the back-end data.
+* **Technology used in the back-end part**: use Thymeleaf template engine for page rendering, use mainstream SSM (Spring + SpringMVC + MyBatis) framework for the overall system architecture, and use MyBatisPlus to simplify the persistence layer development and SpringBoot to simplify the configuration.
+
+## Front-end and back-end development structure
+
+This project uses **SpringBoot** framework plus **Thymeleaf** template engine development structure for back-end and front-end development and interaction.
+
+SpringBoot framework application based on Spring , is committed to simplify the Spring development project . Its most prominent feature and the purpose of my use of this framework is the agreement is greater than the configuration and out-of-the-box configuration strategy by SpringBoot's own default configuration to configure the target structure , greatly simplifying the configuration of all aspects of the Spring application .
+
+At the same time SpringBoot embedded Tomcat server , and integrated a large number of components , so that it can provide strong support for project development in all directions such as testing , deployment , monitoring , interaction .
+
+# Function
+
+- **Client Functionality Hierarchy Diagram**
+
+```mermaid
+graph TD
+A(Online video sharing platform client) --> Register/Login
+A --> C(Video Center)
+A --> B(Personal Center)
+B --> Information
+B --> Focus
+B --> VideoManagement
+B --> History
+B --> Favorites
+C --> Upload
+C --> Search
+C --> Play
+```
+
+- **Client Function Description**
+
+| No.    | Function           | Description                                                  |
+| ------ | ------------------ | ------------------------------------------------------------ |
+| **1**  | `Register/Login`   | Users enter the account password to log in the platform, first time users need to fill in the mailbox, set the account password to register and login. |
+| **2**  | `Information`      | Users can view and modify personal information on the personal information screen. |
+| **3**  | `Focus`            | This module to view individual followers, you can click on the followers to enter the user home page. |
+| **4**  | `Video Management` | This module displays the videos shared and uploaded by users, including uploaded, pending review, and unapproved videos, and users can modify, downgrade, and delete the videos. |
+| **5**  | `History`          | This module displays the user's video viewing history, which can be accessed by clicking on the history to enter the video playback interface. |
+| **6**  | `Favorites`        | This module shows the user's video collection, you can click on the collection to enter the video playback interface. |
+| **7**  | `Upload`           | Users can share videos in this module, they need to fill in the video title, description, video category and other information, and upload the video cover and video source |
+| **8**  | `Search`           | Users can search for videos in this module to quickly locate the desired video. |
+| **9**  | `Play`             | Users can watch videos in the video playback interface       |
+| **10** | `Comment`          | Users can comment or reply on the video playback screen      |
+
+- **Functional hierarchy diagram of backend administration side**
+
+```mermaid
+graph TD
+A(Backend of online video sharing platform) --> C(Video Management)
+A --> B(System Information Management)
+B --> AdministratorManagement
+B --> UserManagement
+B --> AdManagement
+C --> VideoAudit
+C --> managementOfauditedVideos
+```
+
+- **Functional description of backend administration side**
+
+| No.   | Function                       | Description                                                  |
+| ----- | ------------------------------ | ------------------------------------------------------------ |
+| **1** | `Video Audit`                  | This module displays the list of videos to be audited, and the auditor performs manual auditing of individual videos under this module. |
+| **2** | `Management of audited videos` | This module shows all the reviewed videos, you can downgrade the videos, you can view the video details. |
+| **3** | `Comments Management`          | The module displays all video comments, can query the specified video comments, and can delete the comments. |
+| **4** | `Administrator Management`     | This module displays all administrator information and allows you to add, edit and block administrators. |
+| **5** | `User Management`              | This module displays all video user information, can modify some of the user information and the user ban recovery process. |
+| **6** | `Video Category Management`    | This module displays all video classification information, you can add and edit video classification, support secondary classification. |
+| **7** | `Ad Management`                | This module displays all ad information and allows you to add, edit and delete ad information. |
+
+# Database connection
+
+Traditional Java programs connect to the database through native JDBC, but this method has some drawbacks, whenever we need to operate the database, we have to connect first, then operate the Connection object, Statement object and ResultSet object to get the data and map it to the entity class or corresponding data structure, and after the operation, we have to do the exact closure. This series of operations undoubtedly increases the workload and complexity, and we need to catch the exceptions that may be encountered during the operation.
+
+Therefore, we need to use the ORM model to operate on the database, **ORM mapping relationship model**, through the encapsulation of JDBC, to solve the mutual mapping of database and POJO objects.
+
+In this project, the backend of the online video sharing platform uses the **MyBatis persistence layer framework**, MyBatis as a semi-automatic mapping framework can provide simple automatic mapping and flexible configuration through the configuration file when using complex sql statements or logic, greatly improving the development efficiency and flexibility, and the project also uses **MyBatisPlus* * to simplify some of the simple sql query statements.
+
+At the same time, in order to simplify the database connection steps, improve the response time of front-end requests and server performance, and reuse the database connection, **Druid connection pool ** was selected to manage the database connection.
+
+- **Configuration Codes**
+
+  ```yml
+  server:
+    port: 8080
+    servlet:
+      context-path: /video
+  spring:
+    datasource:
+      name: test
+      url: jdbc:mysql://127.0.0.1:3306/video?useSSL=false&serverTimezone=UTC&autoReconnect=true&failOverReadOnly=false
+      username: ******
+      password: ******
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: stat
+      maxActive: 20
+      initialSize: 1
+      maxWait: 60000
+      minIdle: 1
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 20
+  
+  mybatis-plus:
+    type-aliases-package: com.wk.video.bean
+    mapper-locations: classpath:mapping/*.xml
+    configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  ```
+
+  
+
+**Chinese language：**
+<h1 align="center">
   <div align="center">在线视频分享平台</div>
 </h1>
 <div align="center">本系统包括面向用户的<b>视频播放模块</b>与<b>后台信息管理模块</b></div>
