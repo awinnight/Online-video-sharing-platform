@@ -130,10 +130,73 @@ At the same time, in order to simplify the database connection steps, improve th
     configuration:
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   ```
+# Part of the interface show
 
+## Client
+
+* Login
+  ![image](image/51.png)
+
+---
+
+* **Register**
+  ![image](image/54.png)
+
+---
+
+* **Home**
+  ![image](image/55.png)
+
+---
+
+* **Personal Information**
+  ![image](image/59.png)
+
+---
+
+* **Video Search**
+  ![image](image/512.png)
+
+---
+
+* **Video Play**
+  ![image](image/513.png)
+
+---
+
+* **video upload**
+  ![image](image/514.png)
+
+---
+
+### Backend
+
+* **Video Audit List**
+  ![image](image/515.png)
+
+---
+
+* **Video Audit**
+  ![image](image/516.png)
+
+---
+
+* **Administrator Management**
+  ![image](image/518.png)
+
+---
+
+* **Ad Management**
+  ![image](image/520.png)
+
+---
+
+# Statement
+
+* **This program is for learning and communication only.**
   
 
-**Chinese language：**
+**Chinese version：**
 <h1 align="center">
   <div align="center">在线视频分享平台</div>
 </h1>
